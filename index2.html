@@ -69,6 +69,12 @@ tr:nth-child(even) {
     </main>
     <script>
          mapboxgl.accessToken = 'pk.eyJ1IjoiZ3N0b3V0MTMiLCJhIjoiY202aWhqamlzMDhqaDJscTJ5ZDIyN3k4ZSJ9.K-WrLvahIzRX0LnKwAiprw';
+         let map = new mapboxgl.Map({
+            container: 'map', // container ID
+            style: 'mapbox://styles/mapbox/satellite-v9', // style URL
+            zoom: 5.5, // starting zoom
+            center: [138, 38] // starting center
+});
          async function geojsonFetch() {
             let response, earthquakes, japan, table;
             response = await fetch('assets/earthquakes.geojson');
