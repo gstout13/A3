@@ -80,17 +80,13 @@
 
         async function geojsonFetch() {
             let response;
-            
             response = await fetch('assets/earthquakes.geojson');
             earthquakes = await response.json();
             
             response = await fetch('assets/japan.json');
             japan = await response.json();
-        
-        geojsonFetch();
 
-            // Now that data is fetched, add sources and layers to the map
-        map.on('load', function loadingData() {
+            map.on('load', function loadingData() {
             map.addSource('earthquakes', {
                 type: 'geojson',
                 data: earthquakes
@@ -124,7 +120,7 @@
             });
         });
 
-            // Populate the table
+        // Populate the table
             let table = document.getElementsByTagName("table")[0];
             for (let i = 0; i < earthquakes.features.length; i++) {
                 let row = table.insertRow(-1);
@@ -136,8 +132,10 @@
                 cell3.innerHTML = new Date(earthquakes.features[i].properties.time).toLocaleDateString("en-US");
             }
         };
-
+        
         geojsonFetch();
+
+            
 
         let btn = document.getElementsByTagName("button")[0];
         btn.addEventListener('click', sortTable);
