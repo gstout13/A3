@@ -77,9 +77,9 @@ tr:nth-child(even) {
 });
          async function geojsonFetch() {
             let response, earthquakes, japan, table;
-            response = await fetch('assets/earthquakes.geojson');
+            response = await fetch('assets2/earthquakes.geojson');
             earthquakes = await response.json();
-            response = await fetch('assets/japan.json');
+            response = await fetch('assets2/japan.json');
             japan = await response.json();
             map.on('load', function loadingData() {
 
