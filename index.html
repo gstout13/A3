@@ -8,55 +8,59 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-        }
-
-        #container {
-            display: flex;
-            height: 100vh;
-            flex-direction: row;
-        }
-
-        #side-panel {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 400px;  
-            height: 100%;  
-            background-color: rgba(255, 255, 255, 0.8);  
-            overflow-y: auto;
-            padding: 20px;
-            box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);  
-            z-index: 10;  
+    margin: 0;
+    padding: 0;
+    overflow: hidden; 
 }
 
-        #map {
-            flex-grow: 1;  
-        }
+#container {
+    display: flex;
+    height: 100vh;
+    position: relative;
+}
 
-        table {
-            border-collapse: collapse;
-            border-spacing: 0;
-            width: 100%;
-            border: 1px solid #ddd;
-            text-align: right;  
-        }
+#map {
+    width: 100vw;  
+    height: 100vh;  
+}
 
-        button {
-            margin-bottom: 10px;
-        }
+#side-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 400px;  
+    height: 100%;  
+    background-color: rgba(149, 140, 140, 0.8);  
+    overflow-y: auto;
+    padding: 20px;
+    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);  
+    z-index: 10;
+}
 
+@media screen and (max-width: 1024px) {
+    #side-panel {
+        display: none; 
+    }
+}
 
-        th,
-        td {
-            text-align: right;
-            padding: 16px;
-        }
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #ddd;
+}
 
-        tr:nth-child(even) {
-            background-color: #cb1313;
-        }
+th, td {
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+h2 {
+    margin-top: 0;
+}
     </style>
  </head>
  <body>
