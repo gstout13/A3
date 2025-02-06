@@ -1,39 +1,201 @@
 <!DOCTYPE html>
-
-<!DOCTYPE html>
 <html lang="en-US">
  <head>
- </head>
- <body>
-    <main id="container">
-        <div id="side-panel">
-        </div>
-        <div id="map"></div>
-    </main>
- </body>   
-<html>  
-
-<head>
     <meta charset="utf-8">
-    <title>Earthquake List</title>
+    <title>Ski Resorts in the USA</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.0/mapbox-gl.js"></script>
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            display: flex;
+            height: 100vh;
+            flex-direction: row;
+        }
+
+        #side-panel {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 400px;  
+            height: 100%;  
+            background-color: rgba(255, 255, 255, 0.8);  
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);  
+            z-index: 10;  
+}
+
+        #map {
+            flex-grow: 1;  
+        }
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            text-align: right;  
+        }
+
+        button {
+            margin-bottom: 10px;
+        }
+
+
+        th,
+        td {
+            text-align: right;
+            padding: 16px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #cb1313;
+        }
     </style>
-</head> 
+ </head>
+ <body>
+    <main id="container">
+        <div id="side-panel">
+            <h2>Ski Resorts in the USA</h2>
+            <button id="sort-runs">Sort by Number of Runs</button>
+ 
+            <table>
+                <tr>
+                    <th>Resort Name</th>
+                    <th>Number of Runs</th>
+                    <th>Number of Acres</th>
+                </tr>
+            </table>
+        </div>
+        <div id="map"></div>
+    </main>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZ3N0b3V0MTMiLCJhIjoiY202aWhqamlzMDhqaDJscTJ5ZDIyN3k4ZSJ9.K-WrLvahIzRX0LnKwAiprw';
+        let map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/satellite-v9',
+            zoom: 3,
+            center: [-100, 40]
+        });
 
+        async function geojsonFetch2() {
+            let response, resorts;
+            response = await fetch('assets2/usa.geojson');  
+            const geojson = await response.json();
 
+            map.on('load', function () {
+                map.addSource('usa', {
+                    type: 'geojson',
+                    data: geojson
+                });
 
+                map.addLayer({
+                    'id': 'usa-layer',
+                    'type': 'line',
+                    'source': 'usa',
+                    'paint': {
+                        'line-color': 'blue',
+                        'line-width': 3
+                    }
+                });
+            });
+        }
 
+        geojsonFetch2();
 
+        async function geojsonFetch() {
+            let response, resorts;
+            response = await fetch('assets2/resorts.json');
+            resorts = await response.json();
 
+            const geojson = {
+                type: 'FeatureCollection',
+                features: resorts.map(resort => ({
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [resort.lon, resort.lat]
+                    },
+                    properties: {
+                        name: resort.resort_name,
+                        runs: resort.runs,
+                        acres: resort.acres
+                    }
+                }))
+            };
 
+            map.on('load', function () {
+                map.addSource('resorts', {
+                    type: 'geojson',
+                    data: geojson
+                });
 
+                map.addLayer({
+                    'id': 'resorts-layer',
+                    'type': 'circle',
+                    'source': 'resorts',
+                    'paint': {
+                        'circle-radius': [
+                            'interpolate', ['linear'], ['get', 'acres'], 
+                            1000, 5,  
+                            3000, 15 
+                        ],
+                        'circle-stroke-width': 2,
+                        'circle-color': 'lightblue',
+                        'circle-stroke-color': 'grey'
+                    }
+                });
+            });
 
+            let table = document.getElementsByTagName("table")[0];
+            let row, cell1, cell2, cell3;
+            for (let i = 0; i < resorts.length; i++) {
+                row = table.insertRow(-1);
+                cell1 = row.insertCell(0);
+                cell2 = row.insertCell(1);
+                cell3 = row.insertCell(2);
+                cell1.innerHTML = resorts[i].resort_name;
+                cell2.innerHTML = resorts[i].runs;
+                cell3.innerHTML = resorts[i].acres;
+            }
 
+            
+            document.getElementById('sort-runs').addEventListener('click', function () {
+                resorts.sort((a, b) => b.runs - a.runs); 
+                updateTable(resorts);
+            });
 
+            
+            function updateTable(sortedResorts) {
+                table.innerHTML = `
+                    <tr>
+                        <th>Resort Name</th>
+                        <th>Number of Runs</th>
+                        <th>Number of Acres</th>
+                    </tr>
+                `;
+                for (let i = 0; i < sortedResorts.length; i++) {
+                    row = table.insertRow(-1);
+                    cell1 = row.insertCell(0);
+                    cell2 = row.insertCell(1);
+                    cell3 = row.insertCell(2);
+                    cell1.innerHTML = sortedResorts[i].resort_name;
+                    cell2.innerHTML = sortedResorts[i].runs;
+                    cell3.innerHTML = sortedResorts[i].acres;
+                }
+            }
+        }
 
+        geojsonFetch();
 
-
+        
+    </script>
+</body>
 </html>
+
